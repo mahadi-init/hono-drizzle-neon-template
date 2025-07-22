@@ -1,15 +1,25 @@
+import { db } from './db/connection';
+import { products } from './db/schema';
 import { Hono } from 'hono';
 
-export type Env = {
-	DATABASE_URL: string;
-};
+const app = new Hono();
 
-const app = new Hono<{ Bindings: Env }>();
+app.get('/', async (c) => {
+	try {
+		const result = await db(c).select().from(products);
 
-app.get('/', (c) => {
-	return c.json({
-		message: 'Hello World!',
-	});
+		return c.json({
+			result,
+		});
+	} catch (error) {
+		console.log(error);
+		return c.json(
+			{
+				error,
+			},
+			400,
+		);
+	}
 });
 
 export default app;
