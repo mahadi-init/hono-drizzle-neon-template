@@ -8,6 +8,13 @@
       "when": 1753222489197,
       "tag": "0000_loving_rattler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1753345402305,
+      "tag": "0001_cuddly_guardian",
+      "breakpoints": true
     }
   ]
 }
