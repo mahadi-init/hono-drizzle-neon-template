@@ -1,25 +1,17 @@
-import { db } from './db/connection';
-import { products } from './db/schema';
 import { Hono } from 'hono';
+import { auth } from './lib/better-auth';
+import { Variables } from './types/hono-variables';
 
-const app = new Hono();
+const app = new Hono<{ Bindings: CloudflareBindings; Variables: Variables }>();
 
-app.get('/', async (c) => {
-	try {
-		const result = await db(c).select().from(products);
+app.get('/', (c) => {
+	return c.json({ message: 'Welcome to api' });
+});
 
-		return c.json({
-			result,
-		});
-	} catch (error) {
-		console.log(error);
-		return c.json(
-			{
-				error,
-			},
-			400,
-		);
-	}
+const api = app.basePath('/api');
+
+api.on(['POST', 'GET'], '/auth/*', (c) => {
+	return auth(c.env).handler(c.req.raw);
 });
 
 export default app;
