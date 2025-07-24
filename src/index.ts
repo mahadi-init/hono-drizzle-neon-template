@@ -1,14 +1,14 @@
 import { Hono } from 'hono';
 import { auth } from './lib/better-auth';
+import { Variables } from './types/hono-variables';
 
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+const app = new Hono<{ Bindings: CloudflareBindings; Variables: Variables }>();
 
 app.use('*', async (c, next) => {
 	const session = await auth(c.env).api.getSession({ headers: c.req.raw.headers });
 
 	if (!session) {
 		c.set('user', null);
-		c.set('message', 'Hono is hot!!');
 		c.set('session', null);
 		return next();
 	}
@@ -22,26 +22,18 @@ app.on(['GET', 'POST'], '/api/*', (c) => {
 	return auth(c.env).handler(c.req.raw);
 });
 
-// app.get('/', async (c) => {
-// 	try {
-// 		const result = await db(c).select().from(products);
-//
-// 		return c.json({
-// 			result,
-// 		});
-// 	} catch (error) {
-// 		console.log(error);
-// 		return c.json(
-// 			{
-// 				error,
-// 			},
-// 			400,
-// 		);
-// 	}
-// });
+app.get('/api/auth/signin', async (c) => {
+	const data = await auth(c.env).api.signUpEmail({
+		body: {
+			name: 'John Doe', // required
+			email: 'john.doe@example.com', // required
+			password: 'password1234', // required
+			image: 'https://example.com/image.png',
+			callbackURL: 'https://example.com/callback',
+		},
+	});
 
-app.get('/', async (c) => {
-	return c.json({ message: 'Welcome to api' });
+	return c.json({ data });
 });
 
 export default app;
