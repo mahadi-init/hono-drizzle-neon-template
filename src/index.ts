@@ -18,22 +18,18 @@ app.use('*', async (c, next) => {
 	return next();
 });
 
-app.on(['GET', 'POST'], '/api/*', (c) => {
+const api = app.basePath('/api');
+
+api.on(['POST', 'GET'], '/auth/*', (c) => {
 	return auth(c.env).handler(c.req.raw);
 });
 
-app.get('/api/auth/signin', async (c) => {
-	const data = await auth(c.env).api.signUpEmail({
-		body: {
-			name: 'John Doe', // required
-			email: 'john.doe@example.com', // required
-			password: 'password1234', // required
-			image: 'https://example.com/image.png',
-			callbackURL: 'https://example.com/callback',
-		},
-	});
+api.get('/', (c) => {
+	return c.json({ message: 'Welcome to api' });
+});
 
-	return c.json({ data });
+api.get('/hello', (c) => {
+	return c.json({ message: 'Welcome to api' });
 });
 
 export default app;

@@ -13,8 +13,5 @@ export const auth = (env: CloudflareBindings): ReturnType<typeof betterAuth> => 
 		database: drizzleAdapter(db, { provider: 'pg' }),
 		baseURL: env.BETTER_AUTH_URL,
 		secret: env.BETTER_AUTH_SECRET,
-		emailAndPassword: {
-			enabled: true,
-		},
 	});
 };
